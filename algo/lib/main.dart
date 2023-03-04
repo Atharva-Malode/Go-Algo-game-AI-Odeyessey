@@ -5,85 +5,136 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter App',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
+        colorSchemeSeed: Colors.indigo,
+        useMaterial3: true,
+        brightness: Brightness.light,
       ),
-      home: const MyHomePage(),
+      darkTheme: ThemeData(
+        colorSchemeSeed: Colors.blue,
+        useMaterial3: true,
+        brightness: Brightness.dark,
+      ),
+      home: MyHomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          title: const Text('Algo-Game'),
-          backgroundColor: Color.fromARGB(255, 152, 138, 18),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            // ignore: prefer_const_literals_to_create_immutables
-            children: [
-              const Options(step: 1,),
-              const SizedBox(height: 10,width: double.infinity,),
-              const Options(step: 2,),
-              const SizedBox(height: 10,width: double.infinity,),
-              const Options(step: 3,),
-            ]
-          ),
-        ),
-      ),
-    );
-  }
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class Options extends StatelessWidget {
-  final int step;
-  const Options({
-    required this.step,
-    super.key
-  });
+class _MyHomePageState extends State<MyHomePage> {
+  List<String> stepList = [
+    'Train',
+    'Test',
+    'Deploy',
+  ];
+
+  final List<String> correctOrderList = ['Train', 'Test', 'Deploy'];
+
+  bool isOrderCorrect() {
+    for (int i = 0; i < stepList.length; i++) {
+      if (stepList[i] != correctOrderList[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.pink, Colors.purple],
-        ),
-        borderRadius: BorderRadius.circular(10),
+    return Scaffold(
+      body: ReorderableListView(
+        children: stepList
+            .map(
+              (step) => Padding(
+                key: ValueKey(step),
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Container(
+                  width: 200,
+                  padding: const EdgeInsets.all(20.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.pink, Colors.purple],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(15.0),
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 2.0,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      step,
+                      style: const TextStyle(fontSize: 24.0),
+                    ),
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+        onReorder: (int oldIndex, int newIndex) {
+          setState(() {
+            if (newIndex > oldIndex) {
+              newIndex -= 1;
+            }
+            final String item = stepList.removeAt(oldIndex);
+            stepList.insert(newIndex, item);
+          });
+        },
       ),
-      padding: const EdgeInsets.all(10),
-      child: Text('Step $step',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (isOrderCorrect()) {
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => NextPage(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+              ),
+            );
+            print('Order is correct, moving to next page...');
+          }
+          else {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Try Again'),
+                  content: const Text('The sequence is incorrect. Please try again.'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              }
+            );
+          }
+        },
+        child: const Icon(Icons.check),
       ),
-      );
+    );
   }
 }
