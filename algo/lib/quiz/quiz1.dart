@@ -37,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 20,
       ),
       body: ReorderableListView(
+        key: ValueKey(stepList.length),
         children: stepList
             .map(
               (step) => Padding(
@@ -82,25 +83,24 @@ class _MyHomePageState extends State<MyHomePage> {
           if (isOrderCorrect()) {
             // Move to the next page
             print('Order is correct, moving to next page...');
-          } 
-          else {
+          } else {
             showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Try Again'),
-                  content: const Text('The sequence is incorrect. Please try again.'),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('OK'),
-                    ),
-                  ],
-                );
-              }
-            );
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Try Again'),
+                    content: const Text(
+                        'The sequence is incorrect. Please try again.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                });
           }
         },
         child: const Icon(Icons.check),
