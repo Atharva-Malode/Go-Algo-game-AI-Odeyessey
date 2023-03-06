@@ -36,47 +36,50 @@ class _MyHomePageState extends State<MyHomePage> {
         automaticallyImplyLeading: false,
         elevation: 20,
       ),
-      body: ReorderableListView(
-        key: ValueKey(stepList.length),
-        children: stepList
-            .map(
-              (step) => Padding(
-                key: ValueKey(step),
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Container(
-                  width: 20,
-                  padding: const EdgeInsets.all(20.0),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Colors.pink, Colors.purple],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+      body: Container(
+        height: MediaQuery.of(context).size.height * 0.7, // set a fixed height
+        child: ReorderableListView(
+          key: ValueKey(stepList.length),
+          children: stepList
+              .map(
+                (step) => Padding(
+                  key: ValueKey(step),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Container(
+                    width: 20,
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Colors.pink, Colors.purple],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 2.0,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      step,
-                      style: const TextStyle(fontSize: 24.0),
+                    child: Center(
+                      child: Text(
+                        step,
+                        style: const TextStyle(fontSize: 24.0),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            )
-            .toList(),
-        onReorder: (int oldIndex, int newIndex) {
-          setState(() {
-            if (newIndex > oldIndex) {
-              newIndex -= 1;
-            }
-            final String item = stepList.removeAt(oldIndex);
-            stepList.insert(newIndex, item);
-          });
-        },
+              )
+              .toList(),
+          onReorder: (int oldIndex, int newIndex) {
+            setState(() {
+              if (newIndex > oldIndex) {
+                newIndex -= 1;
+              }
+              final String item = stepList.removeAt(oldIndex);
+              stepList.insert(newIndex, item);
+            });
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
