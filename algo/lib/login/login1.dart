@@ -13,7 +13,7 @@ class _LoginPageState extends State<LoginPage> {
   String _errorMessage = '';
 
   void _onLoginPressed() {
-    if (_passwordController.text == '12345') {
+    if (_passwordController.text == '2802') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -21,6 +21,21 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       setState(() {
         _errorMessage = 'Invalid password. Please try again.';
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Incorrect Password'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            });
       });
     }
   }

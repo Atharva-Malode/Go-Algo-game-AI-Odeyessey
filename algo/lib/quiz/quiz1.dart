@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../login/login2.dart';
+import 'dart:async';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -10,12 +11,24 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<String> stepList = [
-    'Train',
-    'Test',
-    'Deploy',
+    'Mean',
+    'Deviation',
+    'Variance',
+    'Covariance',
+    'Coefficients',
+    'Applying Regression',
+    'Predict Values',
   ]..shuffle();
 
-  final List<String> correctOrderList = ['Train', 'Test', 'Deploy'];
+  final List<String> correctOrderList = [
+    'Mean',
+    'Deviation',
+    'Variance',
+    'Covariance',
+    'Coefficients',
+    'Applying Regression',
+    'Predict Values',
+  ];
 
   bool isOrderCorrect() {
     for (int i = 0; i < stepList.length; i++) {
@@ -26,7 +39,34 @@ class _MyHomePageState extends State<MyHomePage> {
     return true;
   }
 
+  Timer? _timer;
+  int _elapsedTimeInSeconds = 0;
   @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void dispose() {
+    _stopTimer();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _elapsedTimeInSeconds++;
+      });
+    });
+  }
+
+  void _stopTimer() {
+    if (_timer != null) {
+      _timer!.cancel();
+      _timer = null;
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -41,9 +81,9 @@ class _MyHomePageState extends State<MyHomePage> {
             .map(
               (step) => Padding(
                 key: ValueKey(step),
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                padding: const EdgeInsets.symmetric(vertical: 05.0),
                 child: Container(
-                  width: 200,
+                  width: MediaQuery.of(context).size.width * 0.8,
                   padding: const EdgeInsets.all(20.0),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -62,7 +102,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       step,
                       style: const TextStyle(
                         fontSize: 24.0,
-              
                       ),
                     ),
                   ),
@@ -79,35 +118,46 @@ class _MyHomePageState extends State<MyHomePage> {
             stepList.insert(newIndex, item);
           });
         },
+        header: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "Arrange the following steps in correct order of linear regression",
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (isOrderCorrect()) {
+            _stopTimer();
+            int timeTakenInSeconds = _elapsedTimeInSeconds;
+            print('Elapsed time: $timeTakenInSeconds seconds');
             // Move to the next page
             Navigator.push(
-              context,
-              CustomPageRoute(page: const LoginPage2())
-            );
+                context,
+                CustomPageRoute(
+                    page: LoginPage2(
+                  elapsedtime: timeTakenInSeconds,
+                )));
             print('Order is correct, moving to next page...');
-          } 
-          else {
+          } else {
             showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Try Again'),
-                  content: const Text('The sequence is incorrect. Please try again.'),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('OK'),
-                    ),
-                  ],
-                );
-              }
-            );
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Try Again'),
+                    content: const Text(
+                        'The sequence is incorrect. Please try again.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  );
+                });
           }
         },
         child: const Icon(Icons.check),
@@ -115,9 +165,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
 class CustomPageRoute extends PageRouteBuilder {
   final Widget page;
-  
+
   CustomPageRoute({required this.page})
       : super(
           pageBuilder: (_, __, ___) => page,
