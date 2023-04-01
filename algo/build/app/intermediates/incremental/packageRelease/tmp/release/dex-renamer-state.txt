@@ -1,0 +1,4 @@
+#Wed Mar 29 11:42:22 IST 2023
+base.0=C\:\\Users\\atharva\\Desktop\\drive\\github\\flutter\\AI Odeyessye\\Go-Algo-game-AI-Odeyessey\\algo\\build\\app\\intermediates\\dex\\release\\minifyReleaseWithR8\\classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
